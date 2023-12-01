@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Magnetyczna Myjka do Okien</title>
+</head>
+<body>
+
+<header>
+    <div class="menu-icon">&#9776;</div>
+<nav>
+    <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#cart">Cart</a></li>
+    </ul>
+</nav>
+
+</header>
+
+<section id="home">
+    <h1>Witaj w Sklepie z Magnetycznymi Myjkami do Okien</h1>
+    <p>Odkryj nowoczesne podejście do mycia okien!</p>
+    <!-- Dodaj tutaj informacje o produkcie, ofertach, zdjęcia itp. -->
+</section>
+
+<section id="about">
+    <h2>O Nas</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. ...</p>
+    <!-- Dodaj więcej informacji o firmie -->
+</section>
+
+<section id="contact">
+    <h2>Kontakt</h2>
+    <p>Skontaktuj się z nami poprzez formularz lub podane dane kontaktowe.</p>
+    <!-- Dodaj formularz kontaktowy i/lub dane kontaktowe -->
+</section>
+
+<section id="reviews">
+    <h2>Recenzje</h2>
+    <!-- Dodaj recenzje klientów -->
+</section>
+
+<section id="cart">
+    <h2>Koszyk</h2>
+    <!-- Dodaj interaktywny koszyk z wybranymi produktami -->
+</section>
+
+    <section>
+        <h2></h2>
+    </section>
+<footer>
+    <p>&copy; 2023 Magnetyczna Myjka do Okien</p>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const menuIcon = document.querySelector('.menu-icon');
+        const nav = document.querySelector('nav ul');
+
+        // Dodaj funkcję do obsługi zdarzenia dla kliknięcia ikonki menu
+        function toggleMenu() {
+            nav.classList.toggle('show');
+        }
+
+        // Dodaj obsługę zdarzenia dla kliknięcia ikonki menu
+        menuIcon.addEventListener('click', toggleMenu);
+
+        // Dodaj obsługę zdarzenia dla kliknięcia linku w menu (schowaj menu)
+        nav.addEventListener('click', function (event) {
+            if (window.innerWidth < 768 && event.target.tagName === 'A') {
+                nav.classList.remove('show');
+            }
+        });
+
+        // Dodaj obsługę zmiany szerokości ekranu (schowaj menu na większych ekranach)
+        window.addEventListener('resize', function () {
+            if (window.innerWidth >= 768) {
+                nav.classList.remove('show');
+            }
+        });
+
+        // Dodaj obsługę zamykania menu po kliknięciu w dowolne miejsce na stronie
+        document.addEventListener('click', function (event) {
+            if (!nav.contains(event.target) && event.target !== menuIcon) {
+                nav.classList.remove('show');
+            }
+        });
+
+        // Dodaj obsługę zamykania menu po przewinięciu strony (jeśli menu jest otwarte)
+        window.addEventListener('scroll', function () {
+            if (nav.classList.contains('show')) {
+                nav.classList.remove('show');
+            }
+        });
+    });
+</script>
+</body>
+</html>
