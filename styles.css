@@ -1,0 +1,67 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #3498db, #2c3e50);
+    animation: gradientAnimation 10s infinite alternate-reverse;
+    color: #fff;
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+header {
+    background-color: #3498db;
+    
+    padding: 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav{
+    
+}
+nav a{
+    text-decoration: none;
+}
+
+nav ul li{
+    text-decoration: none;
+}
+/* Media Queries */
+@media screen and (min-width: 768px) {
+    nav {
+        flex-direction: row; /* Poziomy układ na większych ekranach */
+    }
+
+    .menu-icon {
+        display: none; /* Ukryj ikonkę menu na większych ekranach */
+    }
+}
+
+/* ... (poprzedni kod) ... */
+
+.menu-icon {
+    cursor: pointer;
+    font-size: 24px;
+    display: block; /* Domyślnie ukryj ikonkę na większych ekranach */
+}
+
+/* Media Queries */
+@media screen and (min-width: 768px) {
+    nav {
+        flex-direction: row;
+    }
+
+    .menu-icon {
+        display: none; /* Ukryj ikonkę menu na większych ekranach */
+    }
+}
+
