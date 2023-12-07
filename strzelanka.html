@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Shooter Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black; /* Tło imitujące kosmos */
+            cursor: none; /* Ukrycie kursora myszy */
+        }
+        canvas {
+            display: block;
+        }
+        #score {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 20px;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="score">Punkty: 0</div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreElement = document.getElementById("score");
+
+        const player = {
+            x: 50,
+            y: canvas.height - 50,
+            width: 40,
+            height: 40,
+            speed: 8,
+            image: new Image(),
+            color: "#3498db" // Kolor statek kosmiczny (backup)
+        };
+
+        player.image.src = "https://img.icons8.com/color/96/space-fighter.png"; // Link do ikony statku kosmicznego
+
+        const bullets = [];
+        let enemies = [];
+        let score = 0;
+
+        // Gwiazdy
+        const stars = [];
+        const numStars = 100;
+
+        for (let i = 0; i < numStars; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2 + 1,
+                color: `rgba(255, 255, 255, ${Math.random()})`
+            });
+        }
+
+        function drawStars() {
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = star.color;
+                ctx.fill();
+            });
+        }
+
+        function drawPlayer() {
+            ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
+        }
+
+        function drawBullet(bullet) {
+            ctx.fillStyle = "#00ff00"; // Jaskrawo zielony kolor pocisku
+            ctx.fillRect(bullet.x, bullet.y, 5, 10);
+        }
+
+        function drawEnemy(enemy) {
+            const alienImage = new Image();
+            alienImage.src = "https://img.icons8.com/emoji/96/alien-monster-emoji.png"; // Link do ikony przeciwnika
+            ctx.drawImage(alienImage, enemy.x, enemy.y, 30, 30);
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function update() {
+            clearCanvas();
+            
+            // Rysowanie gwiazd
+            drawStars();
+            
+            drawPlayer();
+
+            // Ruch pocisków
+            bullets.forEach(bullet => {
+                bullet.y -= 5;
+                drawBullet(bullet);
+            });
+
+            // Ruch przeciwników
+            enemies.forEach(enemy => {
+                enemy.y += 1; // Spowolnienie opadania przeciwników
+                drawEnemy(enemy);
+
+                // Sprawdzenie kolizji z graczem
+                if (
+                    player.x < enemy.x + 30 &&
+                    player.x + player.width > enemy.x &&
+                    player.y < enemy.y + 30 &&
+                    player.y + player.height > enemy.y
+                ) {
+                    // Kolizja z graczem - przegrana
+                    handleGameOver();
+                }
+            });
+
+            // Sprawdzenie przegranej
+            if (enemies.some(enemy => enemy.y >= canvas.height)) {
+                // Gracz przegrał - przegrana
+                handleGameOver();
+            }
+        }
+
+        function handleGameOver() {
+            // Wyświetlenie alertu i ponowne załadowanie gry
+            alert("Przegrałeś :c Kliknij guzik i graj dalej");
+            location.reload();
+        }
+
+        function movePlayer(event) {
+            player.x = event.clientX - canvas.getBoundingClientRect().left - player.width / 2;
+            player.y = event.clientY - canvas.getBoundingClientRect().top - player.height / 2;
+        }
+
+        function shootBullet() {
+            bullets.push({ x: player.x + player.width / 2 - 2.5, y: player.y });
+        }
+
+        function spawnEnemy() {
+            const x = Math.random() * (canvas.width - 30);
+            const y = -30;
+            enemies.push({ x, y });
+        }
+
+        function gameLoop() {
+            update();
+
+            // Sprawdzenie kolizji z przeciwnikami
+            bullets.forEach(bullet => {
+                enemies.forEach(enemy => {
+                    if (
+                        bullet.x < enemy.x + 30 &&
+                        bullet.x + 5 > enemy.x &&
+                        bullet.y < enemy.y + 30 &&
+                        bullet.y + 10 > enemy.y
+                    ) {
+                        // Kolizja - usunięcie przeciwnika i pocisku
+                        enemies.splice(enemies.indexOf(enemy), 1);
+                        bullets.splice(bullets.indexOf(bullet), 1);
+
+                        // Zwiększenie punktów po zestrzeleniu przeciwnika
+                        score += 10;
+                        scoreElement.textContent = "Punkty: " + score;
+                    }
+                });
+            });
+
+            // Dodawanie nowych przeciwników
+            if (Math.random() < 0.02) {
+                spawnEnemy();
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Nasłuchiwanie na ruch myszki
+        window.addEventListener("mousemove", movePlayer);
+        // Nasłuchiwanie na lewy przycisk myszki
+        window.addEventListener("mousedown", shootBullet);
+
+        // Rozpocznij pętlę gry
+        gameLoop();
+    </script>
+</body>
+</html>
