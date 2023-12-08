@@ -1,137 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <button class="button" onclick="location.href='snake.html';">Reset</button>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
+    <title>Space Shooter Game</title>
     <style>
-        #plansza {
-            display: grid;
-            grid-template-columns: repeat(20, 20px);
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black; /* Tło imitujące kosmos */
+            cursor: none; /* Ukrycie kursora myszy */
         }
-        .komorka {
-            width: 20px;
-            height: 20px;
-            border: 1px solid #ccc;
+        canvas {
+            display: block;
         }
-        .waz {
-            background-color: #2ecc71;
+        #score {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 20px;
+            font-family: Arial, sans-serif;
         }
-        .jedzenie {
-            background-color: #e74c3c;
+        #level {
+            position: absolute;
+            bottom: 40px;
+            left: 10px;
+            color: white;
+            font-size: 20px;
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
 <body>
-    <h1>Snake Game</h1>
-    <h2>Testowa Gra w Snake</h2>
-    <div id="plansza"></div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="score">Punkty: 0</div>
+    <div id="level">Poziom: 1</div>
+
     <script>
-        const plansza = document.getElementById("plansza");
-        let planszaSzerokosc = 20;
-        let planszaWysokosc = 20;
-        let waz = [{ x: 10, y: 10 }];
-        let kierunek = "right";
-        let jedzenie = { x: Math.floor(Math.random() * planszaSzerokosc), y: Math.floor(Math.random() * planszaWysokosc) };
-        let czyGraTrwa = true;
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreElement = document.getElementById("score");
+        const levelElement = document.getElementById("level");
 
-        function rysujPlansze() {
-            plansza.innerHTML = "";
-            for (let i = 0; i < planszaSzerokosc; i++) {
-                for (let j = 0; j < planszaWysokosc; j++) {
-                    const komorka = document.createElement("div");
-                    komorka.classList.add("komorka");
-                    plansza.appendChild(komorka);
-                }
-            }
-        }
+        const player = {
+            x: 50,
+            y: canvas.height - 50,
+            width: 40,
+            height: 40,
+            speed: 8,
+            image: new Image(),
+            color: "#3498db" // Kolor statek kosmiczny (backup)
+        };
 
-        function rysujWeza() {
-            plansza.querySelectorAll(".waz").forEach(segment => segment.classList.remove("waz"));
+        player.image.src = "https://img.icons8.com/color/96/space-fighter.png"; // Link do ikony statku kosmicznego
 
-            waz.forEach(segment => {
-                const index = segment.x + segment.y * planszaSzerokosc;
-                const komorka = plansza.children[index];
-                komorka.classList.add("waz");
+        const bullets = [];
+        let enemies = [];
+        let score = 0;
+        let level = 1;
+        const baseEnemiesPerLevel = 4; // Bazowa liczba przeciwników na poziomie
+        const enemiesIncreasePerLevel = 2; // Ilość przeciwników zwiększana na każdym poziomie
+        const levelTransitionTime = 3000; // Czas trwania przerwy po przejściu poziomu (w milisekundach)
+
+        // Gwiazdy
+        const stars = [];
+        const numStars = 100;
+
+        for (let i = 0; i < numStars; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2 + 1,
+                color: `rgba(255, 255, 255, ${Math.random()})`
             });
         }
 
-        function rysujJedzenie() {
-            const index = jedzenie.x + jedzenie.y * planszaSzerokosc;
-            const komorka = plansza.children[index];
-            komorka.classList.add("jedzenie");
+        function drawStars() {
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = star.color;
+                ctx.fill();
+            });
         }
 
-        function aktualizujGre() {
-            if (!czyGraTrwa) return;
-
-            const nowaGlowa = {...waz[0]};
-
-            switch (kierunek) {
-                case "up":
-                    nowaGlowa.y--;
-                    break;
-                case "down":
-                    nowaGlowa.y++;
-                    break;
-                case "left":
-                    nowaGlowa.x--;
-                    break;
-                case "right":
-                    nowaGlowa.x++;
-                    break;
-            }
-
-            // Sprawdź kolizję z krawędziami planszy
-            if (nowaGlowa.x < 0 || nowaGlowa.x >= planszaSzerokosc || nowaGlowa.y < 0 || nowaGlowa.y >= planszaWysokosc) {
-                koniecGry();
-                return;
-            }
-
-            // Sprawdź kolizję z samym sobą
-            if (waz.some(segment => segment.x === nowaGlowa.x && segment.y === nowaGlowa.y)) {
-                koniecGry();
-                return;
-            }
-
-            // Sprawdź, czy wąż zjadł jedzenie
-            if (nowaGlowa.x === jedzenie.x && nowaGlowa.y === jedzenie.y) {
-                waz.unshift(nowaGlowa); // Dodaj nową głowę do węża
-                jedzenie = { x: Math.floor(Math.random() * planszaSzerokosc), y: Math.floor(Math.random() * planszaWysokosc) };
-            } else {
-                waz.pop(); // Usuń ostatni segment węża
-                waz.unshift(nowaGlowa); // Dodaj nową głowę do węża
-            }
-
-            rysujPlansze();
-            rysujWeza();
-            rysujJedzenie();
+        function drawPlayer() {
+            ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
         }
 
-        function koniecGry() {
-            czyGraTrwa = false;
-            alert("Koniec gry! Twój wynik: " + waz.length);
+        function drawBullet(bullet) {
+            ctx.fillStyle = "#00ff00"; // Jaskrawo zielony kolor pocisku
+            ctx.fillRect(bullet.x, bullet.y, 5, 10);
         }
 
-        document.addEventListener("keydown", (event) => {
-            if (event.key === "ArrowUp" && kierunek !== "down") {
-                kierunek = "up";
-            } else if (event.key === "ArrowDown" && kierunek !== "up") {
-                kierunek = "down";
-            } else if (event.key === "ArrowLeft" && kierunek !== "right") {
-                kierunek = "left";
-            } else if (event.key === "ArrowRight" && kierunek !== "left") {
-                kierunek = "right";
-            }
-        });
+        function drawEnemy(enemy) {
+            ctx.fillStyle = "#e74c3c"; // Kolor czerwonego kwadratu
+            ctx.fillRect(enemy.x, enemy.y, 30, 30);
+        }
 
-        window.onload = function () {
-            rysujPlansze();
-            rysujWeza();
-            rysujJedzenie();
-            setInterval(aktualizujGre, 100);
-        };
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function update() {
+            clearCanvas();
+
+            // Rysowanie gwiazd
+            drawStars();
+
+            drawPlayer();
+
+            // Ruch pocisków
+            bullets.forEach(bullet => {
+                bullet.y -= 5;
+                drawBullet(bullet);
+            });
+
+            // Ruch przeciwników
+            enemies.forEach(enemy => {
+                enemy.y += 1; // Spowolnienie opadania przeciwników
+                drawEnemy(enemy);
+
+                // Sprawdzenie kolizji z graczem
+                if (
+                    player.x < enemy.x + 30 &&
+                    player.x + player.width > enemy.x &&
+                    player.y < enemy.y + 30 &&
+                    player.y + player.height > enemy.y
+                ) {
+                    // Kolizja z graczem - przegrana
+                    handleGameOver();
+                }
+            });
+
+            // Sprawdzenie przegranej
+            if (enemies.some(enemy => enemy.y >= canvas.height)) {
+                // Gracz przegrał - przegrana
+                handleGameOver();
+            }
+        }
+
+        function handleGameOver() {
+            // Wyświetlenie alertu i ponowne załadowanie gry
+            alert("Przegrałeś :c Kliknij guzik i graj dalej");
+            location.reload();
+        }
+
+        function movePlayer(event) {
+            player.x = event.clientX - canvas.getBoundingClientRect().left - player.width / 2;
+            player.y = event.clientY - canvas.getBoundingClientRect().top - player.height / 2;
+        }
+
+        function shootBullet() {
+            bullets.push({ x: player.x + player.width / 2 - 2.5, y: player.y });
+        }
+
+        function spawnEnemies() {
+            enemies = [];
+            const totalEnemies = baseEnemiesPerLevel + (level - 1) * enemiesIncreasePerLevel;
+
+            for (let i = 0; i < totalEnemies; i++) {
+                const x = Math.random() * (canvas.width - 30);
+                const y = -30 * i; // Rozłożenie przeciwników na różnych wysokościach
+                enemies.push({ x, y });
+            }
+        }
+
+        function startNextLevel() {
+            level++;
+            levelElement.textContent = "Poziom: " + level;
+            setTimeout(() => {
+                spawnEnemies();
+            }, levelTransitionTime);
+        }
+
+        function gameLoop() {
+            update();
+
+            // Sprawdzenie kolizji z przeciwnikami
+            bullets.forEach(bullet => {
+                enemies.forEach(enemy => {
+                    if (
+                        bullet.x < enemy.x + 30 &&
+                        bullet.x + 5 > enemy.x &&
+                        bullet.y < enemy.y + 30 &&
+                        bullet.y + 10 > enemy.y
+                    ) {
+                        // Kolizja - usunięcie przeciwnika i pocisku
+                        enemies.splice(enemies.indexOf(enemy), 1);
+                        bullets.splice(bullets.indexOf(bullet), 1);
+
+                        // Zwiększenie punktów po zestrzeleniu przeciwnika
+                        score += 10;
+                        scoreElement.textContent = "Punkty: " + score;
+
+                        // Sprawdzenie, czy wszystkie przeciwniki zniszczone
+                        if (enemies.length === 0) {
+                            startNextLevel();
+                        }
+                    }
+                });
+            });
+
+            // Dodawanie nowych przeciwników
+            if (enemies.length === 0) {
+                setTimeout(() => {
+                    spawnEnemies();
+                }, levelTransitionTime);
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Nasłuchiwanie na ruch myszki
+        window.addEventListener("mousemove", movePlayer);
+        // Nasłuchiwanie na lewy przycisk myszki
+        window.addEventListener("mousedown", shootBullet);
+
+        // Rozpocznij pętlę gry
+        spawnEnemies();
+        gameLoop();
     </script>
 </body>
 </html>
