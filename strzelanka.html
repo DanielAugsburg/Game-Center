@@ -16,7 +16,7 @@
         }
         #score {
             position: absolute;
-            bottom: 10px;
+            top: 10px;
             left: 10px;
             color: white;
             font-size: 20px;
@@ -24,7 +24,7 @@
         }
         #level {
             position: absolute;
-            bottom: 40px;
+            top: 40px;
             left: 10px;
             color: white;
             font-size: 20px;
@@ -33,7 +33,7 @@
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="gameCanvas"></canvas>
     <div id="score">Punkty: 0</div>
     <div id="level">Poziom: 1</div>
 
@@ -42,6 +42,10 @@
         const ctx = canvas.getContext("2d");
         const scoreElement = document.getElementById("score");
         const levelElement = document.getElementById("level");
+
+        // Ustawienia canvas na pełny ekran
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
         const player = {
             x: 50,
