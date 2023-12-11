@@ -95,8 +95,9 @@
         }
 
         function drawEnemy(enemy) {
-            ctx.fillStyle = "#e74c3c"; // Kolor czerwonego kwadratu
-            ctx.fillRect(enemy.x, enemy.y, 30, 30);
+            const alienImage = new Image();
+            alienImage.src = "https://img.icons8.com/emoji/96/alien-monster-emoji.png"; // Link do ikony przeciwnika
+            ctx.drawImage(alienImage, enemy.x, enemy.y, 30, 30);
         }
 
         function clearCanvas() {
