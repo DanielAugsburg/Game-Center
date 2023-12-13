@@ -39,6 +39,16 @@
             font-size: 24px;
             display: none;
         }
+        #pauseButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border: 1px solid white;
+        }
     </style>
 </head>
 <body>
@@ -46,6 +56,7 @@
     <div id="score">Punkty: 0</div>
     <div id="level">Poziom: 1</div>
     <div id="ability">Dostałeś nową umiejętność! Teraz możesz strzelać potrójnym strzałem (Spacja)</div>
+    <div id="pauseButton" onclick="togglePause()">Pauza</div>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
@@ -53,6 +64,7 @@
         const scoreElement = document.getElementById("score");
         const levelElement = document.getElementById("level");
         const abilityElement = document.getElementById("ability");
+        const pauseButton = document.getElementById("pauseButton");
 
         // Ustawienia canvas na pełny ekran
         canvas.width = window.innerWidth;
@@ -78,6 +90,7 @@
         const enemiesIncreasePerLevel = 2; // Ilość przeciwników zwiększana na każdym poziomie
         const levelTransitionTime = 3000; // Czas trwania przerwy po przejściu poziomu (w milisekundach)
         const abilityUnlockLevel = 5; // Poziom, na którym gracz otrzymuje nową umiejętność
+        let paused = false;
 
         // Gwiazdy
         const stars = [];
@@ -121,6 +134,10 @@
         }
 
         function update() {
+            if (paused) {
+                return;
+            }
+
             clearCanvas();
 
             // Rysowanie gwiazd
@@ -179,84 +196,85 @@
             bullets.push({ x: player.x + player.width / 2 - 2.5 - 20, y: player.y });
             bullets.push({ x: player.x + player.width / 2 - 2.5 + 20, y: player.y });
         }
+
         function spaceBomb() {
-    // Sprawdź, czy gracz ma odpowiedni poziom
-    if (level >= 10) {
-        // Dodaj kosmiczną bombę do gry
-        const bomb = {
-            x: player.x + player.width / 2 - 5,
-            y: player.y + player.height / 2 - 5,
-            radius: 0,
-            maxRadius: 100,
-            explosionTime: 2000, // 2 sekundy
-            explosionStartTime: null,
-            exploded: false
-        };
+            // Sprawdź, czy gracz ma odpowiedni poziom
+            if (level >= 10) {
+                // Dodaj kosmiczną bombę do gry
+                const bomb = {
+                    x: player.x + player.width / 2 - 5,
+                    y: player.y + player.height / 2 - 5,
+                    radius: 0,
+                    maxRadius: 100,
+                    explosionTime: 2000, // 2 sekundy
+                    explosionStartTime: null,
+                    exploded: false
+                };
 
-        function drawBomb() {
-            ctx.beginPath();
-            ctx.arc(bomb.x, bomb.y, bomb.radius, 0, Math.PI * 2);
-            ctx.fillStyle = "red";
-            ctx.fill();
-        }
+                function drawBomb() {
+                    ctx.beginPath();
+                    ctx.arc(bomb.x, bomb.y, bomb.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = "red";
+                    ctx.fill();
+                }
 
-        function explode() {
-            // Sprawdź, czy czas eksplozji minął
-            if (Date.now() - bomb.explosionStartTime >= bomb.explosionTime) {
-                bomb.exploded = true;
+                function explode() {
+                    // Sprawdź, czy czas eksplozji minął
+                    if (Date.now() - bomb.explosionStartTime >= bomb.explosionTime) {
+                        bomb.exploded = true;
+                    }
+
+                    // Rysuj eksplozję
+                    drawExplosion();
+                }
+
+                function drawExplosion() {
+                    const explosionRadius = bomb.radius;
+                    const numRays = 36;
+
+                    for (let i = 0; i < numRays; i++) {
+                        const angle = (Math.PI * 2 * i) / numRays;
+                        const endX = bomb.x + explosionRadius * Math.cos(angle);
+                        const endY = bomb.y + explosionRadius * Math.sin(angle);
+
+                        drawRay(bomb.x, bomb.y, endX, endY);
+                    }
+                }
+
+                function drawRay(startX, startY, endX, endY) {
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(endX, endY);
+                    ctx.strokeStyle = "yellow";
+                    ctx.stroke();
+                }
+
+                // Dodaj bombę do tablicy obiektów do śledzenia
+                enemies.push(bomb);
+
+                // Ustaw czas rozpoczęcia eksplozji
+                bomb.explosionStartTime = Date.now();
+
+                // Uruchom pętlę animacji
+                function bombLoop() {
+                    if (!bomb.exploded) {
+                        // Rysuj bombę i zwiększaj jej promień
+                        drawBomb();
+                        bomb.radius += (bomb.maxRadius / bomb.explosionTime) * (Date.now() - bomb.explosionStartTime);
+                    } else {
+                        // Eksplozja
+                        explode();
+                    }
+
+                    // Kontynuuj pętlę animacji
+                    if (!bomb.exploded) {
+                        requestAnimationFrame(bombLoop);
+                    }
+                }
+
+                bombLoop();
             }
-
-            // Rysuj eksplozję
-            drawExplosion();
         }
-
-        function drawExplosion() {
-            const explosionRadius = bomb.radius;
-            const numRays = 36;
-
-            for (let i = 0; i < numRays; i++) {
-                const angle = (Math.PI * 2 * i) / numRays;
-                const endX = bomb.x + explosionRadius * Math.cos(angle);
-                const endY = bomb.y + explosionRadius * Math.sin(angle);
-
-                drawRay(bomb.x, bomb.y, endX, endY);
-            }
-        }
-
-        function drawRay(startX, startY, endX, endY) {
-            ctx.beginPath();
-            ctx.moveTo(startX, startY);
-            ctx.lineTo(endX, endY);
-            ctx.strokeStyle = "yellow";
-            ctx.stroke();
-        }
-
-        // Dodaj bombę do tablicy obiektów do śledzenia
-        enemies.push(bomb);
-
-        // Ustaw czas rozpoczęcia eksplozji
-        bomb.explosionStartTime = Date.now();
-
-        // Uruchom pętlę animacji
-        function bombLoop() {
-            if (!bomb.exploded) {
-                // Rysuj bombę i zwiększaj jej promień
-                drawBomb();
-                bomb.radius += (bomb.maxRadius / bomb.explosionTime) * (Date.now() - bomb.explosionStartTime);
-            } else {
-                // Eksplozja
-                explode();
-            }
-
-            // Kontynuuj pętlę animacji
-            if (!bomb.exploded) {
-                requestAnimationFrame(bombLoop);
-            }
-        }
-
-        bombLoop();
-    }
-}
 
         function calculateEnemySpeed(level) {
             // Obliczanie szybkości przeciwników
@@ -292,6 +310,16 @@
             setTimeout(() => {
                 spawnEnemies();
             }, levelTransitionTime);
+        }
+
+        function togglePause() {
+            paused = !paused;
+
+            if (paused) {
+                pauseButton.textContent = "Wznów";
+            } else {
+                pauseButton.textContent = "Pauza";
+            }
         }
 
         function gameLoop() {
@@ -343,11 +371,17 @@
             }
         });
         // Dodaj obsługę klawisza lewy alt dla bomby
-window.addEventListener("keydown", function (event) {
-    if (event.code === "AltLeft") {
-        spaceBomb();
-    }
-});
+        window.addEventListener("keydown", function (event) {
+            if (event.code === "AltLeft") {
+                spaceBomb();
+            }
+        });
+        // Dodaj obsługę klawisza Esc dla pauzy
+        window.addEventListener("keydown", function (event) {
+            if (event.code === "Escape") {
+                togglePause();
+            }
+        });
 
         // Rozpocznij pętlę gry
         spawnEnemies();
