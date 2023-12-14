@@ -40,6 +40,7 @@
             display: none;
         }
         #pauseButton {
+            user-select: none;
             position: absolute;
             top: 10px;
             right: 10px;
@@ -59,6 +60,16 @@
             user-select: none; /* Zapobiega zaznaczaniu tekstu */
             font-size: 14px;
         }
+        #Przywitanie {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: white;
+            font-size: 14px;
+            text-align: right;
+            user-select: none; /* Zapobiega zaznaczaniu tekstu */
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -72,6 +83,10 @@
         <p>Strzał: Lewy przycisk myszy</p>
         <p>Potrójny strzał (od 5 poziomu): Spacja</p>
         <p>Kosmiczna bomba: Lewy Ctrl</p>
+    </div>
+    <div id="Przywitanie">
+        <p>Witaj w grze Space Shooter</p>
+        <p>Gra zostala stworzona przez Daniel Augsburg</p>
     </div>
 
     <script>
