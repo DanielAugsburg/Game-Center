@@ -636,5 +636,9 @@ button:hover{
 
 footer{
     color: white;
-    float: inherit;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    
+    
 }
