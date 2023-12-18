@@ -634,11 +634,25 @@ button:hover{
     
     }
 
-footer{
-    color: white;
-    text-align: center;
-    position: fixed;
-    bottom: 0;
+    footer {
+        animation: wejscie 4.9s;
+        color: white;
+        text-align: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 10px;
+        background-color: #f394f323;
+        
     
+    }
+    a{
+        color: #f394f3;
+        text-decoration: none;
+    }
+    a:hover{
+        color:#ab81ed; 
+    }
+
     
-}
