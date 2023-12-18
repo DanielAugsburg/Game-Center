@@ -548,7 +548,46 @@
       text-shadow: 0 0 30px rgba(255, 255, 255, 0.6), 0 0 60px rgba(255, 255, 255, 0.45), 0 0 110px rgba(255, 255, 255, 0.25), 0 0 100px rgba(255, 255, 255, 0.1);
     }
   }
+  .wejscie {
+	-webkit-animation: wejscie 0.7s cubic-bezier(0.470, 0.000, 0.745, 0.715) both;
+	        animation: wejscie 0.7s cubic-bezier(0.470, 0.000, 0.745, 0.715) both;
+}
+
+ @-webkit-keyframes wejscie {
+    0% {
+      -webkit-transform: scale(2);
+              transform: scale(2);
+      -webkit-filter: blur(4px);
+              filter: blur(4px);
+      opacity: 0;
+    }
+    100% {
+      -webkit-transform: scale(1);
+              transform: scale(1);
+      -webkit-filter: blur(0px);
+              filter: blur(0px);
+      opacity: 1;
+    }
+  }
+  @keyframes wejscie {
+    0% {
+      -webkit-transform: scale(2);
+              transform: scale(2);
+      -webkit-filter: blur(4px);
+              filter: blur(4px);
+      opacity: 0;
+    }
+    100% {
+      -webkit-transform: scale(1);
+              transform: scale(1);
+      -webkit-filter: blur(0px);
+              filter: blur(0px);
+      opacity: 1;
+    }
+  }
   
+
+
 
 body{
 
@@ -558,9 +597,44 @@ h1{
     text-align: center;
     padding-top: 50px;
     color: rgb(243, 148, 243);
-    animation: blysk 3s; 
+    animation: blysk 4s; 
     text-shadow: 0px -4px 36px rgba(214, 218, 223, 1);
 }
+.gameMenu{
+    display: flex;
+    justify-content: center;
+    padding-top: 30px;
+}
+button{
+    margin-right: 30px;
+    animation: wejscie 4.9s;
+    font-family: OCR A Std, monospace;
+    font-weight: 5;
+    font-size: 14px;
+    color: #fff;
+    background-color: #ab81ed;
+    padding: 10px 30px;
+    border: solid #79619e 2px;
+    box-shadow: rgb(0, 0, 0) 0px 0px 0px 0px;
+    border-radius: 50px;
+    transition : 989ms;
+    transform: translateY(0);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+button:hover{
+    transition : 989ms;
+    padding: 10px 50px;
+    transform : translateY(-0px);
+    background-color: #ffffff;
+    color: #f394f3;
+    border: solid 2px #ab81ed;
+    
+    }
+
 footer{
     color: white;
+    float: inherit;
 }
