@@ -7,21 +7,41 @@
     <link rel="icon" href="img/snake.ico" type="image/x-icon">
     <link rel="shortcut icon" href="img/snake.ico" type="image/x-icon">
     <style>
-        #plansza {
-            display: grid;
-            grid-template-columns: repeat(20, 20px);
-        }
-        .komorka {
-            width: 20px;
-            height: 20px;
-            border: 1px solid #ccc;
-        }
-        .waz {
-            background-color: #2ecc71;
-        }
-        .jedzenie {
-            background-color: #e74c3c;
-        }
+        body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+#plansza {
+    display: grid;
+    grid-template-columns: repeat(20, 20px);
+}
+
+.komorka {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ccc;
+}
+
+.waz {
+    background-color: #2ecc71;
+}
+
+.jedzenie {
+    background-color: #e74c3c;
+}
+
     </style>
 </head>
 <body>
