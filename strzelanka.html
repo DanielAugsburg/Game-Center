@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Shooter Game</title>
+    <title>Space Invaders</title>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
     <style>
         body {
             margin: 0;
@@ -123,6 +125,7 @@
         const enemiesIncreasePerLevel = 2; // Ilość przeciwników zwiększana na każdym poziomie
         const levelTransitionTime = 3000; // Czas trwania przerwy po przejściu poziomu (w milisekundach)
         const abilityUnlockLevel = 5; // Poziom, na którym gracz otrzymuje nową umiejętność
+        const abilityUnlockLevel2 = 2; // Poziom, na którym gracz otrzymuje bombe
         let paused = false;
 
         // Gwiazdy
@@ -230,84 +233,83 @@
             bullets.push({ x: player.x + player.width / 2 - 2.5 + 20, y: player.y });
         }
 
+        const bombs = [];
         function spaceBomb() {
-            // Sprawdź, czy gracz ma odpowiedni poziom
-            if (level >= 10) {
-                // Dodaj kosmiczną bombę do gry
-                const bomb = {
-                    x: player.x + player.width / 2 - 5,
-                    y: player.y + player.height / 2 - 5,
-                    radius: 0,
-                    maxRadius: 100,
-                    explosionTime: 2000, // 2 sekundy
-                    explosionStartTime: null,
-                    exploded: false
-                };
+    // Dodaj bombę do gry
+    const bomb = {
+        x: player.x + player.width / 2 - 5,
+        y: player.y + player.height / 2 - 5,
+        radius: 0,
+        maxRadius: 100,
+        explosionTime: 2000, // 2 sekundy
+        explosionStartTime: null,
+        exploded: false
+    };
 
-                function drawBomb() {
-                    ctx.beginPath();
-                    ctx.arc(bomb.x, bomb.y, bomb.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = "red";
-                    ctx.fill();
-                }
+    // Dodaj bombę do tablicy bomby
+    bombs.push(bomb);
 
-                function explode() {
-                    // Sprawdź, czy czas eksplozji minął
-                    if (Date.now() - bomb.explosionStartTime >= bomb.explosionTime) {
-                        bomb.exploded = true;
-                    }
+    // Ustaw czas rozpoczęcia eksplozji
+    bomb.explosionStartTime = Date.now();
 
-                    // Rysuj eksplozję
-                    drawExplosion();
-                }
-
-                function drawExplosion() {
-                    const explosionRadius = bomb.radius;
-                    const numRays = 36;
-
-                    for (let i = 0; i < numRays; i++) {
-                        const angle = (Math.PI * 2 * i) / numRays;
-                        const endX = bomb.x + explosionRadius * Math.cos(angle);
-                        const endY = bomb.y + explosionRadius * Math.sin(angle);
-
-                        drawRay(bomb.x, bomb.y, endX, endY);
-                    }
-                }
-
-                function drawRay(startX, startY, endX, endY) {
-                    ctx.beginPath();
-                    ctx.moveTo(startX, startY);
-                    ctx.lineTo(endX, endY);
-                    ctx.strokeStyle = "yellow";
-                    ctx.stroke();
-                }
-
-                // Dodaj bombę do tablicy obiektów do śledzenia
-                enemies.push(bomb);
-
-                // Ustaw czas rozpoczęcia eksplozji
-                bomb.explosionStartTime = Date.now();
-
-                // Uruchom pętlę animacji
-                function bombLoop() {
-                    if (!bomb.exploded) {
-                        // Rysuj bombę i zwiększaj jej promień
-                        drawBomb();
-                        bomb.radius += (bomb.maxRadius / bomb.explosionTime) * (Date.now() - bomb.explosionStartTime);
-                    } else {
-                        // Eksplozja
-                        explode();
-                    }
-
-                    // Kontynuuj pętlę animacji
-                    if (!bomb.exploded) {
-                        requestAnimationFrame(bombLoop);
-                    }
-                }
-
-                bombLoop();
-            }
+    // Uruchom pętlę animacji bomby
+    function bombLoop() {
+        if (!bomb.exploded) {
+            // Rysuj bombę i zwiększaj jej promień
+            drawBomb(bomb);
+            bomb.radius += (bomb.maxRadius / bomb.explosionTime) * (Date.now() - bomb.explosionStartTime);
+        } else {
+            // Eksplozja
+            explode(bomb);
         }
+
+        // Kontynuuj pętlę animacji
+        if (!bomb.exploded) {
+            requestAnimationFrame(bombLoop);
+        }
+    }
+
+    bombLoop();
+}
+
+function drawBomb(bomb) {
+    ctx.beginPath();
+    ctx.arc(bomb.x, bomb.y, bomb.radius, 0, Math.PI * 2);
+    ctx.fillStyle = "red";
+    ctx.fill();
+}
+
+function explode(bomb) {
+    // Sprawdź, czy czas eksplozji minął
+    if (Date.now() - bomb.explosionStartTime >= bomb.explosionTime) {
+        bomb.exploded = true;
+    }
+
+    // Rysuj eksplozję
+    drawExplosion(bomb);
+}
+
+function drawExplosion(bomb) {
+    const explosionRadius = bomb.radius;
+    const numRays = 36;
+
+    for (let i = 0; i < numRays; i++) {
+        const angle = (Math.PI * 2 * i) / numRays;
+        const endX = bomb.x + explosionRadius * Math.cos(angle);
+        const endY = bomb.y + explosionRadius * Math.sin(angle);
+
+        drawRay(bomb.x, bomb.y, endX, endY);
+    }
+}
+
+function drawRay(startX, startY, endX, endY) {
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.strokeStyle = "yellow";
+    ctx.stroke();
+}
+        
 
         function calculateEnemySpeed(level) {
             // Obliczanie szybkości przeciwników
@@ -334,6 +336,12 @@
 
             // Sprawdzenie, czy osiągnięto poziom odblokowania umiejętności
             if (level === abilityUnlockLevel) {
+                abilityElement.style.display = "block";
+                setTimeout(() => {
+                    abilityElement.style.display = "none";
+                }, levelTransitionTime);
+            }
+            if (level === abilityUnlockLevel2) {
                 abilityElement.style.display = "block";
                 setTimeout(() => {
                     abilityElement.style.display = "none";
@@ -403,12 +411,15 @@
                 tripleShoot();
             }
         });
-        // Dodaj obsługę klawisza lewy alt dla bomby
         window.addEventListener("keydown", function (event) {
-            if (event.code === "AltLeft") {
-                spaceBomb();
-            }
-        });
+    // Sprawdź, czy klawisz Ctrl jest wciśnięty
+    if (event.code === "ControlLeft" || event.code === "ControlRight") {
+        // Zatrzymaj domyślne zachowanie przeglądarki
+        event.preventDefault();
+        
+        spaceBomb();
+    }
+});
         // Dodaj obsługę klawisza Esc dla pauzy
         window.addEventListener("keydown", function (event) {
             if (event.code === "Escape") {
