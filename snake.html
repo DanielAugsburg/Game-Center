@@ -31,23 +31,39 @@ h1 {
     grid-template-columns: repeat(20, 20px);
     background-color: #8aea5a;
     backdrop-filter: blur(10px);
-    border-radius: 3px solid rgb(105, 105, 105);
+    border: 5px solid rgb(243, 148, 243);
+    border-radius: 10px;
+   
 }
 
 .komorka {
     width: 20px;
     height: 20px;
-    border: 1px solid #fff4f400;
+    border: 1px solid #ece1e100;
 }
 
 .waz {
-    background-color: #000000;
+    background: linear-gradient(90deg, #000000, #737373); /* Gradient tła od czarnego do zielonego */
+    border-radius: 70%; /* Zaokrąglenie rogów, aby stworzyć wrażenie węża */
 }
 
 .jedzenie {
     background-image: url(/img/jedzenie.png);
     background-size: 23px 23px;
 }
+#container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding-left: 20px;
+        }
+
+        button {
+            margin-top: 10px;
+            
+        }       
+
+
 @keyframes move {
     100% {
         transform: translate3d(0, 0, 1px) rotate(360deg);
@@ -362,8 +378,14 @@ h1 {
         <span></span>
         <span></span>
      </div>
+<div id="container">
     <h1>Snake Game</h1>
+    <button class="button" onclick="location.href='snake.html';">Od Nowa</button>
+
+</div>    
+<section id="gra">
     <div id="plansza"></div>
     <script src="snake.js"></script>
+</section>
 </body>
 </html>
