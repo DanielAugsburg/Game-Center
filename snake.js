@@ -85,6 +85,18 @@ function koniecGry() {
 }
 
 document.addEventListener("keydown", (event) => {
+    if (event.key === "W" || event.key === "w" && kierunek !== "down") {
+        kierunek = "up";
+    } else if (event.key === "S" || event.key === "s" && kierunek !== "up") {
+        kierunek = "down";
+    } else if (event.key === "A" || event.key === "a" && kierunek !== "right") {
+        kierunek = "left";
+    } else if (event.key === "D" || event.key === "d" && kierunek !== "left") {
+        kierunek = "right";
+    }
+});
+
+document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowUp" && kierunek !== "down") {
         kierunek = "up";
     } else if (event.key === "ArrowDown" && kierunek !== "up") {
