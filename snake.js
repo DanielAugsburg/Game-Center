@@ -83,6 +83,9 @@ function koniecGry() {
     czyGraTrwa = false;
     alert("Koniec gry! Twój wynik: " + waz.length);
 }
+function scoreAlert(){
+    alert("Twoj poprzednik wynik gry to: "+ waz.length);
+}
 
 document.addEventListener("keydown", (event) => {
     if (event.key === "W" || event.key === "w" && kierunek !== "down") {
