@@ -54,8 +54,9 @@ h1 {
 #container {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             padding-left: 20px;
+            text-align:center;
         }
 
         button {
@@ -65,6 +66,7 @@ h1 {
             color: #fff;
             background-color: #ab81ed;
             padding: 10px 30px;
+            margin-top: 10px;
             border: solid #79619e 2px;
             box-shadow: rgb(0, 0, 0) 0px 0px 0px 0px;
             border-radius: 50px;
@@ -83,6 +85,9 @@ h1 {
     color: #f394f3;
     border: solid 2px #ab81ed;
     
+    }
+    #calosc{
+        justify-content:start;
     }       
 
 
@@ -400,6 +405,7 @@ h1 {
         <span></span>
         <span></span>
      </div>
+    
 <div id="container">
     <h1>Snake Game</h1>
     <button class="button" onclick="location.href='snake.html';">Nowa Gra</button>
@@ -410,5 +416,6 @@ h1 {
     <div id="plansza"></div>
     <script src="snake.js"></script>
 </section>
+
 </body>
 </html>
